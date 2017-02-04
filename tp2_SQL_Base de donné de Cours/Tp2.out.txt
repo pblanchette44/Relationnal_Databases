@@ -1,0 +1,136 @@
+
+C1
+
+Trigger profDepartement
+
+Après insertion de 2 professeurs de trop dans le departement info
+
+test:
+
+insert into professeur (codeprof,nomprof,prenomprof,codeDept)
+values ('LEBM0','Lebeau','Mathieu','INFO');
+values ('LARE0','Larochelle','Etienne','INFO');
+
+output:
+ORA-20000: Erreur: Trop ou pas assez de prof dans le   departement
+ORA-06512: a "BC191016.PROFDEPARTEMENT", ligne 10
+
+
+C2
+
+Contrainte de clé unique
+
+On ajoute une clé unique composé pour la table groupecours
+
+test:
+
+insert into groupecours
+values('INF3180',20,'00112','SADF0','test');
+
+output:
+ERROR at line 1:
+ORA-00001: violation de contrainte unique (BC191016.UNQ_SESS_COUR_PROF)
+
+C3:
+
+Trigger de conversion en majuscule
+
+test
+insert into professeur (codeprof,nomprof,prenomprof,codeDept)
+values ('LEBM0','Lebeau','Mathieu','BIO');
+
+output:
+
+select * from professeur where codeprof = 'LEBM0'
+
+CODEPROF   NOMPROF			  PRENOMPROF
+---------- ------------------------------ ------------------------------
+CODEDEPT
+----------
+LEBM0	   LEBEAU			  Mathieu
+BIO
+
+
+
+C4: 
+
+Contrainte d'integrité, le nombre d'étudiant inscrit ne peut être négatif.
+
+test
+
+update groupecours set nbinscriptions = -1 where codecours = 'INF3180'
+*
+ERROR at line 1:
+ORA-02290: violation de contraintes (BC191016.SYS_C001807513) de verification
+
+C5
+
+Contrainte de suppresion il suffit d'ajouter on delete cascade dans plusieurs tables
+
+test: suppresion du departement d'informatique
+
+delete from departement where coddept = 'INFO'ç
+
+select * from professeur
+->
+CODEPROF   NOMPROF			  PRENOMPROF
+---------- ------------------------------ ------------------------------
+CODEDEPT
+----------
+LABL0	   Labelle			  Laura
+MATH
+
+LABL1	   Labelle			  Laurent
+BIO
+
+BEAM0	   Beausoleil			  Mireille
+MATH
+
+
+Ex2:
+
+execute tacheenseignement('SADF0')
+Code professeur : SADF0
+Nom: Sadat
+Prenom: Fatiha
+Department : Informatique
+.
+.
+codeCours   codeGrp   date_debut_session date_fin_session
+INF3180       10       03/09/2013	   16/12/2013
+
+PL/SQL procedure successfully completed.
+
+
+EX3:
+
+execute EmploiduTemps(00112)
+Code professeur : GODR0
+Nom: Godin
+Prenom: Robert
+Department : Informatique
+.
+.
+CodeProf codecours codegrp codesess nombre cours
+GODR0	 INF3180     30     112      15
+GODR0	 INF5180     30     112      15
+.
+.
+Code professeur : SADF0
+Nom: Sadat
+Prenom: Fatiha
+Department : Informatique
+.
+.
+CodeProf codecours codegrp codesess nombre cours
+SADF0	 INF3180     10     112      15
+.
+.
+
+PL/SQL procedure successfully completed.
+
+
+
+
+
+
